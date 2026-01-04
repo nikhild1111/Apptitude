@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Mongoose Operations Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .method-card {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .method-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .method-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #764ba2;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .method-purpose {
+            color: #555;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .method-details {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            gap: 10px;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #667eea;
+            min-width: 120px;
+        }
+
+        .detail-value {
+            color: #666;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .keyword {
+            color: #ff79c6;
+        }
+
+        .function {
+            color: #50fa7b;
+        }
+
+        .string {
+            color: #f1fa8c;
+        }
+
+        .comment {
+            color: #6272a4;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #667eea;
+            color: white;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-right: 5px;
+        }
+
+        .badge.create { background: #10b981; }
+        .badge.read { background: #3b82f6; }
+        .badge.update { background: #f59e0b; }
+        .badge.delete { background: #ef4444; }
+        .badge.advanced { background: #8b5cf6; }
+
+        .important-note {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .important-note strong {
+            color: #d97706;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+            }
+            .method-card:hover {
+                transform: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+            header h1 {
+                font-size: 1.8em;
+            }
+            .section-title {
+                font-size: 1.5em;
+            }
+        }
+
+        .toc {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .toc h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .toc ul {
+            list-style: none;
+        }
+
+        .toc li {
+            padding: 5px 0;
+        }
+
+        .toc a {
+            color: #764ba2;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .toc a:hover {
+            color: #667eea;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Complete Mongoose Operations Guide</h1>
+            <p>Quick Reference for all Mongoose CRUD Operations</p>
+        </header>
+
+        <div class="content">
+            <!-- Table of Contents -->
+            <div class="toc">
+                <h3>📋 Quick Navigation</h3>
+                <ul>
+                    <li><a href="#create">🔹 CREATE Operations</a></li>
+                    <li><a href="#read">🔹 READ Operations</a></li>
+                    <li><a href="#update">🔹 UPDATE Operations</a></li>
+                    <li><a href="#delete">🔹 DELETE Operations</a></li>
+                    <li><a href="#advanced">🔹 ADVANCED Operations</a></li>
+                </ul>
+            </div>
+
+            <!-- CREATE SECTION -->
+            <div id="create" class="section">
+                <h2 class="section-title">
+                    <span class="badge create">CREATE</span>
+                    Create Operations
+                </h2>
+
+                <div class="method-card">
+                    <div class="method-name">Model.create(doc, options)</div>
+                    <div class="method-purpose">Creates and saves one or more documents in a single operation</div>
+                    <div class="method-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Returns:</span>
+                            <span class="detail-value">Promise with the created document(s)</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Options:</span>
+                            <span class="detail-value">None typically used</span>
+                        </div>
+                    </div>
+                    <div class="code-block">
+<span class="keyword">await</span> User.<span class="function">create</span>({ name: <span class="string">"John"</span>, email: <span class="string">"john@example.com"</span> })
+<span class="keyword">await</span> User.<span class="function">create</span>([{ name: <span class="string">"Alice"</span> }, { name: <span class="string">"Bob"</span> }])
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-name">new Model(data) + await model.save()</div>
+                    <div class="method-purpose">Creates a document instance, allows manipulation before saving</div>
+                    <div class="method-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Returns:</span>
+                            <span class="detail-value">Promise with the saved document</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">When to use:</span>
+                            <span class="detail-value">When you need to modify the document before saving</span>
+                        </div>
+                    </div>
+                    <div class="code-block">
+<span class="keyword">const</span> user = <span class="keyword">new</span> <span class="function">User</span>({ name: <span class="string">"Jane"</span> })
+user.age = <span class="string">25</span>
+<span class="keyword">await</span> user.<span class="function">save</span>()
+                    </div>
+                </div>
+            </div>
+
+            <!-- READ SECTION -->
+            <div id="read" class="section">
+                <h2 class="section-title">
+                    <span class="badge read">READ</span>
+                    Read Operations
+                </h2>
+
+                <div class="method-card">
+                    <div class="method-name">Model.find(filter, projection, options)</div>
+                    <div class="method-purpose">Finds all documents matching the filter</div>
+                    <div class="method-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Returns:</span>
+                            <span class="detail-value">Promise with array of documents (empty array if none found)</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Options:</span>
+                            <span class="detail-value">limit, sort, skip, lean</span>
+                        </div>
+                    </div>
+                    <div class="code-block">
+<span class="keyword">await</span> User.<span class="function">find</span>({ age: { $gte: <span class="string">18</span> } })
+<span class="keyword">await</span> User.<span class="function">find</span>({}, <span class="string">"name email"</span>)
+<span class="keyword">await</span> User.<span class="function">find</span>({}, <span class="keyword">null</span>, { limit: <span class="string">10</span>, sort: { name: <span class="string">1</span> } })
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-name">Model.findOne(filter, projection, options)</div>
+                    <div class="method-purpose">Finds the first document matching the filter</div>
+                    <div class="method-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Returns:</span>
+                            <span class="detail-value">Promise with a single document or null</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Options:</span>
+                            <span class="detail-value">sort, select</span>
+                        </div>
+                    </div>
+                    <div class="code-block">
+<span class="keyword">await</span> User.<span class="function">findOne</span>({ email: <span class="string">"john@example.com"</span> })
+<span class="keyword">await</span> User.<span class="function">findOne</span>({ age: { $gte: <span class="string">18</span> } }, <span class="string">"name email"</span>)
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-name">Model.findById(id, projection, options)</div>
+                    <div class="method-purpose">Finds a single document by its _id field</div>
+                    <div class="method-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Returns:</span>
+                            <span class="detail-value">Promise with the document or null</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Options:</span>
+                            <span class="detail-value">select, populate</span>
+                        </div>
+                    </div>
+                    <div class="code-block">
+<span class="keyword">await</span> User.<span class="function">findById</span>(<span class="string">"507f1f77bcf86cd799439011"</span>)
+<span class="keyword">await</span> User.<span class="function">findById</span>(userId, <span class="string">"name email"</span>)
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-name">Model.countDocuments(filter)</div>
+                    <div class="method-purpose">Counts the number of documents matching the filter</div>
+                    <div class="method-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Returns:</span>
+                            <span class="detail-value">Promise with a number</span>
+                        </div>
+                    </div>
+                    <div class="code-block">
+<span class="keyword">await</span> User.<span class="function">countDocuments</span>({ age: { $gte: <span class="string">18</span> } })
+<span class="keyword">await</span> User.<span class="function">countDocuments</span>({})
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-name">Model.exists(filter)</div>
+                    <div class="method-purpose">Checks if at least one document matches the filter</div>
+                    <div class="method-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Returns:</span>
+                            <span class="detail-value">Promise with { _id: ... } if exists, null otherwise</span>
+                        </div>
+                    </div>
+                    <div class="code-block">
+<span class="keyword">const</span> exists = <span class="keyword">await</span> User.<span class="function">exists</span>({ email: <span class="string">"john@example.com"</span> })
+<span class="keyword">if</span> (exists) console.<span class="function">log</span>(<span class="string">"User exists"</span>)
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-name">Model.distinct(field, filter)</div>
+                    <div class="method-purpose">Finds distinct values for a specified field</div>
+                    <div class="method-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Returns:</span>
+                            <span class="detail-value">Promise with array of unique values</span>
+                        </div>
+                    </div>
+                    <div class="code-block">
+<span class="keyword">await</span> User.<span class="function">distinct</span>(<span class="string">"country"</span>)
+<span class="keyword">await</span> User.<span class="function">distinct</span>(<span class="string">"age"</span>, { isActive: <span class="keyword">true</span> })
+                    </div>
+                </div>
+            </div>
+
+            <!-- UPDATE SECTION -->
+            <div id="update" class="section">
+                <h2 class="section-title">
+                    <span class="badge update">UPDATE</span>
+                    Update Operations
+                </h2>
+
+                <div class="method-card">
+                    <div class="method-name">Model.updateOne(filter, update, options)</div>
+                    <div class="method-purpose">Updates the first document that matches the filter</div>
+                    <div class="method-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Returns:</span>
+                            <span class="detail-value">Promise with result object { modifiedCount, matchedCount }</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Options:</span>
+                            <span class="detail-value">upsert: true, runValidators: true</span>
+                        </div>
+                    </div>
+                    <div class="code-block">
+<span class="keyword">await</span> User.<span class="function">updateOne</span>({ email: <span class="string">"john@example.com"</span> }, { $set: { age: <span class="string">26</span> } })
+<span class="keyword">await</span> User.<span class="function">updateOne</span>({ email: <span class="string">"new@example.com"</span> }, { $set: { name: <span class="string">"New"</span> } }, { upsert: <span class="keyword">true</span> })
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-name">Model.updateMany(filter, update, options)</div>
+                    <div class="method-purpose">Updates all documents that match the filter</div>
+                    <div class="method-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Returns:</span>
+                            <span class="detail-value">Promise with result object { modifiedCount, matchedCount }</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Options:</span>
+                            <span class="detail-value">upsert: true, runValidators: true</span>
+                        </div>
+                    </div>
+                    <div class="code-block">
+<span class="keyword">await</span> User.<span class="function">updateMany</span>({ age: { $lt: <span class="string">18</span> } }, { $set: { isMinor: <span class="keyword">true</span> } })
+<span class="keyword">await</span> User.<span class="function">updateMany</span>({}, { $inc: { loginCount: <span class="string">1</span> } })
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-name">Model.findOneAndUpdate(filter, update, options)</div>
+                    <div class="method-purpose">Finds a document, updates it, and returns the document</div>
+                    <div class="method-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Returns:</span>
+                            <span class="detail-value">Promise with the document (old by default, new if new: true)</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Options:</span>
+                            <span class="detail-value">new: true, upsert: true, runValidators: true</span>
+                        </div>
+                    </div>
+                    <div class="important-note">
+                        <strong>IMPORTANT:</strong> Use <code>{ new: true }</code> to get the updated document
+                    </div>
+                    <div class="code-block">
+<span class="keyword">await</span> User.<span class="function">findOneAndUpdate</span>(
+  { email: <span class="string">"john@example.com"</span> }, 
+  { $set: { age: <span class="string">27</span> } }, 
+  { new: <span class="keyword">true</span> }
+)
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-name">Model.findByIdAndUpdate(id, update, options)</div>
+                    <div class="method-purpose">Finds a document by ID, updates it, and returns the document</div>
+                    <div class="method-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Returns:</span>
+                            <span class="detail-value">Promise with the document (old by default, new if new: true)</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Options:</span>
+                            <span class="detail-value">new: true, upsert: true, runValidators: true</span>
+                        </div>
+                    </div>
+                    <div class="important-note">
+                        <strong>IMPORTANT:</strong> Use <code>{ new: true }</code> to get the updated document
+                    </div>
+                    <div class="code-block">
+<span class="keyword">await</span> User.<span class="function">findByIdAndUpdate</span>(userId, { $set: { age: <span class="string">28</span> } }, { new: <span class="keyword">true</span> })
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-name">Model.replaceOne(filter, replacement, options)</div>
+                    <div class="method-purpose">Replaces the entire document (not just update fields)</div>
+                    <div class="method-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Returns:</span>
+                            <span class="detail-value">Promise with result object { modifiedCount, matchedCount }</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Options:</span>
+                            <span class="detail-value">upsert: true</span>
+                        </div>
+                    </div>
+                    <div class="code-block">
+<span class="keyword">await</span> User.<span class="function">replaceOne</span>({ _id: userId }, { name: <span class="string">"New Name"</span>, email: <span class="string">"new@example.com"</span> })
+                    </div>
+                </div>
+            </div>
+
+            <!-- DELETE SECTION -->
+            <div id="delete" class="section">
+                <h2 class="section-title">
+                    <span class="badge delete">DELETE</span>
+                    Delete Operations
+                </h2>
+
+                <div class="method-card">
+                    <div class="method-name">Model.deleteOne(filter)</div>
+                    <div class="method-purpose">Deletes the first document that matches the filter</div>
+                    <div class="method-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Returns:</span>
+                            <span class="detail-value">Promise with result object { deletedCount }</span>
+                        </div>
+                    </div>
+                    <div class="code-block">
+<span class="keyword">await</span> User.<span class="function">deleteOne</span>({ email: <span class="string">"john@example.com"</span> })
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-name">Model.deleteMany(filter)</div>
+                    <div class="method-purpose">Deletes all documents that match the filter</div>
+                    <div class="method-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Returns:</span>
+                            <span class="detail-value">Promise with result object { deletedCount }</span>
+                        </div>
+                    </div>
+                    <div class="important-note">
+                        <strong>WARNING:</strong> <code>deleteMany({})</code> deletes ALL documents!
+                    </div>
+                    <div class="code-block">
+<span class="keyword">await</span> User.<span class="function">deleteMany</span>({ isActive: <span class="keyword">false</span> })
+<span class="keyword">await</span> User.<span class="function">deleteMany</span>({})  <span class="comment">// Deletes everything!</span>
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-name">Model.findByIdAndDelete(id, options)</div>
+                    <div class="method-purpose">Finds a document by ID, deletes it, and returns the document</div>
+                    <div class="method-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Returns:</span>
+                            <span class="detail-value">Promise with the deleted document or null</span>
+                        </div>
+                    </div>
+                    <div class="code-block">
+<span class="keyword">const</span> deleted = <span class="keyword">await</span> User.<span class="function">findByIdAndDelete</span>(userId)
+<span class="keyword">if</span> (deleted) console.<span class="function">log</span>(<span class="string">"Deleted:"</span>, deleted.name)
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-name">Model.findOneAndDelete(filter, options)</div>
+                    <div class="method-purpose">Finds a document, deletes it, and returns the document</div>
+                    <div class="method-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Returns:</span>
+                            <span class="detail-value">Promise with the deleted document or null</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Options:</span>
+                            <span class="detail-value">sort (to control which document is deleted)</span>
+                        </div>
+                    </div>
+                    <div class="code-block">
+<span class="keyword">await</span> User.<span class="function">findOneAndDelete</span>({ email: <span class="string">"john@example.com"</span> })
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADVANCED SECTION -->
+            <div id="advanced" class="section">
+                <h2 class="section-title">
+                    <span class="badge advanced">ADVANCED</span>
+                    Advanced Operations
+                </h2>
+
+                <div class="method-card">
+                    <div class="method-name">Model.aggregate(pipeline)</div>
+                    <div class="method-purpose">Performs complex aggregation operations with multiple stages</div>
+                    <div class="method-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Returns:</span>
+                            <span class="detail-value">Promise with array of aggregated results</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Stages:</span>
+                            <span class="detail-value">$match, $group, $sort, $project, $limit, $skip, $lookup</span>
+                        </div>
+                    </div>
+                    <div class="code-block">
+<span class="keyword">await</span> User.<span class="function">aggregate</span>([
+  { $match: { isActive: <span class="keyword">true</span> } },
+  { $group: { _id: <span class="string">"$country"</span>, count: { $sum: <span class="string">1</span> } } },
+  { $sort: { count: <span class="string">-1</span> } }
+])
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-name">Model.find().populate(path, select)</div>
+                    <div class="method-purpose">Replaces document references with actual documents</div>
+                    <div class="method-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Returns:</span>
+                            <span class="detail-value">Query (chainable) - use await to execute</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Requires:</span>
+                            <span class="detail-value">Field must reference another model (ref: "ModelName")</span>
+                        </div>
+                    </div>
+                    <div class="code-block">
+<span class="keyword">await</span> Post.<span class="function">find</span>().<span class="function">populate</span>(<span class="string">"userId"</span>)
+<span class="keyword">await</span> Post.<span class="function">find</span>().<span class="function">populate</span>(<span class="string">"userId"</span>, <span class="string">"name email"</span>)
+<span class="keyword">await</span> Post.<span class="function">find</span>().<span class="function">populate</span>({ path: <span class="string">"userId"</span>, select: <span class="string">"name"</span> })
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-name">Model.find().sort(criteria)</div>
+                    <div class="method-purpose">Sorts query results</div>
+                    <div class="method-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Returns:</span>
+                            <span class="detail-value">Query (chainable)</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Values:</span>
+                            <span class="detail-value">1 for ascending, -1 for descending</span>
+                        </div>
+                    </div>
+                    <div class="code-block">
+<span class="keyword">await</span> User.<span class="function">find</span>().<span class="function">sort</span>({ age: <span class="string">1</span> })  <span class="comment">// Ascending</span>
+<span class="keyword">await</span> User.<span class="function">find</span>().<span class="function">sort</span>({ createdAt: <span class="string">-1</span> })  <span class="comment">// Descending</span>
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-name">Model.find().limit(number)</div>
+                    <div class="method-purpose">Limits the number of documents returned</div>
+                    <div class="method-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Returns:</span>
+                            <span class="detail-value">Query (chainable)</span>
+                        </div>
+                    </div>
+                    <div class="code-block">
+<span class="keyword">await</span> User.<span class="function">

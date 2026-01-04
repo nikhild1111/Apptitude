@@ -1,0 +1,1046 @@
+MongoDB Interview Questions & Answers for Freshers
+
+Generated: 10/30/2025
+============================================================
+
+
+1. BASICS
+------------------------------------------------------------
+
+Q1. What is MongoDB?
+
+Answer:
+MongoDB is a NoSQL, document-oriented database that stores data in flexible, JSON-like documents called BSON (Binary JSON). It's designed for scalability, high performance, and flexibility. Unlike traditional relational databases, MongoDB doesn't require a predefined schema.
+
+····························································
+
+Q2. What are the main features of MongoDB?
+
+Answer:
+• Document-Oriented: Stores data in JSON-like documents
+• Schema-less: No fixed schema required
+• Scalability: Horizontal scaling through sharding
+• Indexing: Supports various index types
+• Replication: High availability through replica sets
+• Aggregation: Powerful aggregation framework
+• GridFS: For storing large files
+
+····························································
+
+Q3. What is a Document in MongoDB?
+
+Answer:
+A document is a record in MongoDB, similar to a row in relational databases. It's a set of key-value pairs stored in BSON format.
+
+Example:
+{
+  _id: ObjectId('507f1f77bcf86cd799439011'),
+  name: 'John Doe',
+  age: 25,
+  email: 'john@example.com'
+}
+
+····························································
+
+Q4. What is a Collection in MongoDB?
+
+Answer:
+A collection is a group of documents, similar to a table in relational databases. Collections don't enforce a schema, so documents within the same collection can have different fields.
+
+Example: A 'users' collection can contain multiple user documents.
+
+····························································
+
+Q5. What is the difference between SQL and MongoDB?
+
+Answer:
+SQL (Relational):
+• Fixed schema
+• Tables with rows and columns
+• Uses SQL queries
+• Vertical scaling
+• ACID transactions
+
+MongoDB (NoSQL):
+• Dynamic schema
+• Collections with documents
+• Uses JSON-like queries
+• Horizontal scaling
+• Eventual consistency (configurable)
+
+····························································
+
+
+2. CRUD OPERATIONS
+------------------------------------------------------------
+
+Q1. How do you insert a document in MongoDB?
+
+Answer:
+Using insertOne() or insertMany():
+
+// Insert single document
+db.users.insertOne({
+  name: 'Alice',
+  age: 28,
+  email: 'alice@example.com'
+});
+
+// Insert multiple documents
+db.users.insertMany([
+  { name: 'Bob', age: 30 },
+  { name: 'Charlie', age: 25 }
+]);
+
+// Old method (deprecated)
+db.users.insert({ name: 'Dave', age: 27 });
+
+····························································
+
+Q2. How do you find/query documents in MongoDB?
+
+Answer:
+Using find() and findOne():
+
+// Find all documents
+db.users.find();
+
+// Find with condition
+db.users.find({ age: { $gt: 25 } });
+
+// Find one document
+db.users.findOne({ name: 'Alice' });
+
+// Find with projection (specific fields)
+db.users.find({}, { name: 1, email: 1, _id: 0 });
+
+····························································
+
+Q3. How do you update documents in MongoDB?
+
+Answer:
+Using updateOne(), updateMany(), or replaceOne():
+
+// Update single document
+db.users.updateOne(
+  { name: 'Alice' },
+  { $set: { age: 29 } }
+);
+
+// Update multiple documents
+db.users.updateMany(
+  { age: { $lt: 25 } },
+  { $set: { status: 'young' } }
+);
+
+// Replace entire document
+db.users.replaceOne(
+  { name: 'Bob' },
+  { name: 'Bob', age: 31, city: 'NYC' }
+);
+
+····························································
+
+Q4. How do you delete documents in MongoDB?
+
+Answer:
+Using deleteOne() or deleteMany():
+
+// Delete single document
+db.users.deleteOne({ name: 'Alice' });
+
+// Delete multiple documents
+db.users.deleteMany({ age: { $lt: 20 } });
+
+// Delete all documents in collection
+db.users.deleteMany({});
+
+// Old method (deprecated)
+db.users.remove({ name: 'Bob' });
+
+····························································
+
+Q5. What is findOneAndUpdate() and how to use it?
+
+Answer:
+findOneAndUpdate() finds a document, updates it, and returns it in one atomic operation.
+
+Syntax:
+db.collection.findOneAndUpdate(
+  filter,
+  update,
+  options
+)
+
+Example:
+db.users.findOneAndUpdate(
+  { name: 'Alice' },
+  { $set: { age: 30 } },
+  { returnDocument: 'after' } // returns updated doc
+);
+
+Options:
+• returnDocument: 'before' or 'after'
+• upsert: true (insert if not found)
+• sort: { age: -1 } (if multiple matches)
+
+····························································
+
+Q6. What is findOneAndDelete() in MongoDB?
+
+Answer:
+findOneAndDelete() finds a document, deletes it, and returns the deleted document.
+
+Example:
+const deleted = db.users.findOneAndDelete(
+  { name: 'Bob' },
+  { sort: { age: -1 } } // delete oldest Bob if multiple
+);
+
+Use cases:
+• Get deleted document for logging
+• Atomic delete operation
+• Delete with sorting priority
+
+····························································
+
+Q7. What is findOneAndReplace() in MongoDB?
+
+Answer:
+findOneAndReplace() finds a document and replaces it entirely with a new document.
+
+Example:
+db.users.findOneAndReplace(
+  { name: 'Alice' },
+  { name: 'Alice Smith', age: 31, city: 'NYC' },
+  { returnDocument: 'after' }
+);
+
+Difference from update:
+• Replace: Changes entire document
+• Update: Modifies specific fields
+
+····························································
+
+Q8. What is bulkWrite() in MongoDB?
+
+Answer:
+bulkWrite() performs multiple write operations in a single call for better performance.
+
+Example:
+db.users.bulkWrite([
+  { insertOne: { document: { name: 'X', age: 25 } } },
+  { updateOne: {
+      filter: { name: 'Y' },
+      update: { $set: { age: 30 } }
+  }},
+  { deleteOne: { filter: { name: 'Z' } } },
+  { replaceOne: {
+      filter: { name: 'A' },
+      replacement: { name: 'A', age: 40 }
+  }}
+], { ordered: false });
+
+Options:
+• ordered: true (stops on error)
+• ordered: false (continues on error)
+
+····························································
+
+Q9. What are countDocuments() and estimatedDocumentCount()?
+
+Answer:
+countDocuments() - Accurate count with filter:
+db.users.countDocuments({ age: { $gte: 18 } });
+
+estimatedDocumentCount() - Fast approximate count:
+db.users.estimatedDocumentCount();
+// Uses metadata, no filter support
+
+Difference:
+• countDocuments: Accurate, slower, supports filters
+• estimatedDocumentCount: Fast, approximate, no filters
+
+Old method (deprecated):
+db.users.count({ age: { $gte: 18 } });
+
+····························································
+
+Q10. What is distinct() method in MongoDB?
+
+Answer:
+distinct() returns an array of unique values for a field.
+
+Example:
+// Get all unique cities
+db.users.distinct('city');
+// Returns: ['NYC', 'LA', 'Chicago']
+
+// With filter
+db.users.distinct('city', { age: { $gte: 25 } });
+
+// For nested fields
+db.users.distinct('address.city');
+
+····························································
+
+
+3. QUERY OPERATORS
+------------------------------------------------------------
+
+Q1. What are comparison operators in MongoDB? 
+this are we use to filer out the data by comparing the filled it will check with all filed
+
+Answer:
+Common comparison operators:
+
+• $eq: Equal to
+• $ne: Not equal to
+• $gt: Greater than
+• $gte: Greater than or equal
+• $lt: Less than
+• $lte: Less than or equal
+• $in: Matches any value in array
+• $nin: Matches none of the values
+
+Example:
+db.users.find({ age: { $gte: 18, $lte: 65 } });
+
+// $in operator
+db.users.find({ city: { $in: ['NYC', 'LA'] } });
+
+// $nin operator
+db.users.find({ status: { $nin: ['blocked', 'deleted'] } });
+
+····························································
+
+Q2. What are logical operators in MongoDB?
+
+Answer:
+Logical operators: we use then handle the multiple condiation simulateneouly 
+
+• $and: Matches all conditions // like we give filled of array here with condiation like mens where m size 1000 reupess red color like this 
+• $or: Matches any condition //this we use in filters to handle all of them
+• $not: Inverts the condition
+• $nor: Matches none of the conditions
+
+Example:
+db.users.find({
+  $or: [
+    { age: { $lt: 20 } },
+    { age: { $gt: 60 } }
+  ]
+});
+
+// $and operator (implicit)
+db.users.find({
+  $and: [
+    { age: { $gte: 18 } },
+    { city: 'NYC' }
+  ]
+});
+
+// $nor operator
+db.users.find({
+  $nor: [
+    { age: { $lt: 18 } },
+    { status: 'blocked' }
+  ]
+});
+
+····························································
+
+Q3. What are update operators in MongoDB?
+
+Answer:
+Common update operators: // this are using to purform the chnges in the data like this are there 
+
+• $set: Sets field value
+• $unset: Removes field
+• $inc: Increments field value
+• $mul: Multiplies field value
+• $rename: Renames field
+• $min: Updates if new value is less
+• $max: Updates if new value is greater
+• $currentDate: Sets to current date
+
+✅ updateOne() — Mongoose Method
+
+This is a Mongoose wrapper around MongoDB’s native updateOne.
+
+✔ Directly updates the document
+✔ Does NOT return updated document
+✔ Returns only { acknowledged, matchedCount, modifiedCount }
+
+Example:
+
+await User.updateOne(
+  { name: "Alice" },
+  { $set: { age: 25 } }
+);
+
+✅ findOneAndUpdate() — Mongoose Method
+
+This is also a Mongoose method, built on top of MongoDB's findAndModify command.
+
+✔ Directly updates the document
+✔ Can return updated document ({ new: true })
+✔ Very commonly used in APIs
+
+Example:
+
+await User.findOneAndUpdate(
+  { name: "Alice" },
+  { $set: { age: 25 } },
+  { new: true }
+);
+
+❌ updateOne() does NOT support { new: true }
+
+It will NOT return the updated document
+👉 { new: true } is ignored
+👉 You will still get only:
+{
+  acknowledged: true,
+  matchedCount: 1,
+  modifiedCount: 1
+}
+
+
+✔ If you want the updated document, use this:
+findOneAndUpdate() with { new: true }
+
+💡 Summary Table
+Method	Supports { new: true }	Returns updated doc?
+updateOne()	❌ NO	           ❌ NO
+updateMany()	❌ NO	            ❌ NO
+findOneAndUpdate()	✔ YES	  ✔ YES
+findByIdAndUpdate()	✔ YES	  ✔ YES
+
+····························································
+
+Q4. What are array update operators?
+
+Answer:
+Array operators: if we have array of bookslist we oush or pull form it 
+
+• $push: Adds element to array
+• $pull: Removes matching elements
+• $pop: Removes first/last element
+• $addToSet: Adds unique element
+• $pullAll: Removes multiple values
+• $: Updates first matching element
+• $[]: Updates all array elements
+
+Examples:
+// Add to array
+db.users.updateOne(
+  { name: 'Alice' },
+  { $push: { hobbies: 'reading' } }
+);
+
+// Add unique element
+db.users.updateOne(
+  { name: 'Alice' },
+  { $addToSet: { tags: 'premium' } }
+);
+
+// Remove from array
+db.users.updateOne(
+  { name: 'Alice' },
+  { $pull: { hobbies: 'gaming' } }
+);
+
+// Remove last element
+db.users.updateOne(
+  { name: 'Alice' },
+  { $pop: { hobbies: 1 } } // 1=last, -1=first
+);
+
+····························································
+
+Q5. What are element query operators?
+
+Answer:
+Element operators:
+
+• $exists: Checks if field exists
+• $type: Checks field data type
+
+Examples:
+// Check if field exists
+db.users.find({ email: { $exists: true } });
+
+// Check field type
+db.users.find({ age: { $type: 'number' } });
+db.users.find({ age: { $type: 16 } }); // 16 = int32
+
+Common BSON types:
+1 = double, 2 = string, 3 = object,
+4 = array, 16 = int32, 18 = int64
+
+····························································
+
+Q6. What are array query operators?
+
+Answer:
+Array operators:
+
+• $all: Matches arrays with all elements
+• $elemMatch: Matches documents with array element
+• $size: Matches array size
+
+Examples:
+// Contains all elements
+db.users.find({
+  hobbies: { $all: ['reading', 'music'] }
+});
+
+// Array size
+db.users.find({ hobbies: { $size: 3 } });
+
+// Element match
+db.students.find({
+  scores: {
+    $elemMatch: { subject: 'math', score: { $gte: 80 } }
+  }
+});
+
+····························································
+
+Q7. What is the $regex operator?
+
+Answer:
+$regex performs pattern matching using regular expressions.
+
+3. How to use Regex with Mongoose
+const query = {
+  title: { $regex: keyword, $options: "i" }
+};
+
+
+OR short form:
+
+{ title: /keyword/i }  
+
+
+Examples:
+// Case-insensitive search
+db.users.find({
+  name: { $regex: /john/i }
+});
+
+// Starts with
+db.users.find({
+  email: { $regex: /^john/ }
+});
+
+// Contains
+db.users.find({
+  name: { $regex: 'smith', $options: 'i' }
+});
+
+{
+  $or: [
+    { title: /iphone/i },
+    { brand: /iphone/i },
+    { description: /iphone/i }
+  ]
+}
+
+Starts With
+{ brand: { $regex: "^s", $options: "i" } }
+
+
+Matches: Samsung, Sony…
+
+Ends With
+{ title: { $regex: "pro$", $options: "i" } }
+
+
+
+Options:
+• i: Case insensitive
+• m: Multiline
+• x: Ignore whitespace
+• s: Dot matches newline
+
+····························································
+
+
+4. INDEXING
+------------------------------------------------------------
+
+Q1. What is indexing in MongoDB?
+
+Answer:
+Indexes are data structures that improve query performance by allowing MongoDB to quickly locate documents without scanning the entire collection. They work similar to book indexes.
+
+Without index: O(n) - scans all documents
+With index: O(log n) - much faster lookup
+
+····························································
+
+Q2. How do you create an index in MongoDB?
+
+Answer:
+Using createIndex():
+
+// Single field index
+db.users.createIndex({ email: 1 }); // 1 for ascending
+
+// Compound index
+db.users.createIndex({ name: 1, age: -1 }); // -1 for descending
+
+// Unique index
+db.users.createIndex({ email: 1 }, { unique: true });
+
+// View indexes
+db.users.getIndexes();
+
+····························································
+
+Q3. What types of indexes does MongoDB support?
+
+Answer:
+MongoDB supports several index types:
+
+• Single Field Index: On one field
+• Compound Index: On multiple fields
+• Multikey Index: On array fields
+• Text Index: For text search
+• Geospatial Index: For location data
+• Hashed Index: For hash-based sharding
+• Unique Index: Ensures uniqueness
+• TTL Index: Auto-deletes documents after time
+
+····························································
+
+
+5. AGGREGATION
+------------------------------------------------------------
+
+Q1. What is the Aggregation Framework in MongoDB?
+
+Answer:
+The Aggregation Framework is a powerful techinaue system for processing documents.(its a method by which we can perform group of opration together like grup by and agreegation in mysql)
+
+Data flows through stages, each stage transforms the documents.
+Each stage takes input documents
+➡ Transforms them
+➡ Passes them to the next stage
+Common stages: $match, $group, $sort, $project, $limit, $skip 
+
+ It's similar to SQL GROUP BY but more powerful.
+qQL GROUP BY
+SQL HAVING
+SQL ORDER BY
+JOIN (using $lookup)
+SELECT specific fields (using $project)
+
+
+
+
+····························································
+
+Q2. Write a basic aggregation query example //for order toal sum i have done gruping of the user and then total sum i ahve calulated to show shoein admin panel how many order and spend is doen by user 
+
+Answer:
+Example: Get average age by city
+
+db.users.aggregate([
+  // Stage 1: Filter documents
+  { $match: { age: { $gte: 18 } } },
+  
+  // Stage 2: Group and calculate
+  { $group: {
+    _id: '$city',
+    avgAge: { $avg: '$age' },
+    count: { $sum: 1 }
+  }},
+  
+  // Stage 3: Sort results
+  { $sort: { avgAge: -1 } }
+]);
+
+Explanation you give in interview:
+
+$match: Only adults (age ≥ 18)
+
+$group: Group documents by city and calculate:
+
+avgAge = average age
+
+totalUsers = count of users in each city
+
+$sort: Sort by avgAge in descending order
+
+····························································
+
+Q3. What are common aggregation operators?
+
+Answer:
+Accumulator operators:
+• $sum: Sum of values
+• $avg: Average of values
+• $min: Minimum value
+• $max: Maximum value
+• $first: First value
+• $last: Last value
+• $push: Create array of values
+
+
+///////****************** i ahve use agregation liek int he total user spend i have use it first took the orders the costormer id then upply agregation on the orders then in which i grup all the id with same as costomer id then took the sum of the amount so get totoal sepnd 
+Example:
+db.orders.aggregate([
+  { $group: {
+    _id: '$customerId',
+    totalSpent: { $sum: '$amount' },
+    orderCount: { $sum: 1 }
+  }}
+]);
+Explain in interview:
+totalSpent: total money spent by customer
+orderCount: how many orders
+····························································
+
+Q5. What is $project? Why do we use it?
+
+Answer:
+$project is used to select, hide, rename, or compute new fields.
+
+db.users.aggregate([
+  {
+    $project: {
+      name: 1,
+      age: 1,
+      isAdult: { $gte: ["$age", 18] }
+    }
+  }
+])
+Explain:
+
+Only return name & age
+
+Add a new field isAdult (true/false)
+
+
+
+
+
+6. ADVANCED CONCEPTS
+------------------------------------------------------------
+
+Q1. What is Sharding in MongoDB?
+
+Answer:
+Sharding is MongoDB's approach to horizontal scaling. It distributes data across multiple servers (shards) to handle large datasets and high throughput.
+
+Components:
+• Shard: Each shard holds a subset of data
+• Config Servers: Store metadata and configuration
+• Query Routers (mongos): Route queries to shards
+• Shard Key: Field used to distribute data
+
+····························································
+
+Q2. What is Replication in MongoDB?
+
+Answer:
+Replication provides redundancy and high availability. A replica set is a group of MongoDB servers that maintain the same data.
+
+Components:
+• Primary: Receives all write operations
+• Secondary: Replicates primary's data
+• Arbiter: Participates in elections (optional)
+
+If primary fails, a secondary is automatically elected as new primary.
+
+····························································
+
+Q3. What is the _id field in MongoDB?
+
+Answer:
+The _id field is a unique identifier for each document, similar to a primary key. MongoDB automatically creates it if not provided.
+
+Characteristics:
+• Always the first field
+• Immutable (cannot be changed)
+• Indexed by default
+• Default type: ObjectId (12-byte identifier)
+
+ObjectId structure:
+• 4 bytes: Timestamp
+• 5 bytes: Random value
+• 3 bytes: Incrementing counter
+
+····························································
+
+Q4. What is the difference between embedded and referenced documents?
+ik if we have user adresss and directly storing the users data in the same cham its embebed and storing ref its ref
+
+Answer:
+Embedded Documents (Denormalization):
+• Store related data in same document
+• Better read performance
+• Data duplication
+
+Example:
+{
+  name: 'John',
+  address: { city: 'NYC', zip: '10001' }
+}
+
+Referenced Documents (Normalization):
+• Store reference to another document
+• No duplication
+• Requires multiple queries or $lookup
+
+Example:
+{
+  name: 'John',
+  addressId: ObjectId('...')
+}
+
+····························································
+
+Q5. What is GridFS in MongoDB?
+
+Answer:
+GridFS is a specification for storing and retrieving large files (>16MB) that exceed BSON document size limit.
+
+How it works:
+• Splits files into chunks (255KB default)
+• Stores chunks in 'chunks' collection
+• Stores metadata in 'files' collection
+
+Use cases: Images, videos, audio files, large documents
+
+····························································
+
+Q6. What is the difference between save() and insert()?
+
+Answer:
+save() (deprecated in MongoDB 3.2+):
+• If _id exists: updates document
+• If _id doesn't exist: inserts document
+
+insert() (deprecated):
+• Always inserts new document
+• Throws error if _id exists
+
+Modern approach:
+• Use insertOne()/insertMany() for new docs
+• Use updateOne()/replaceOne() for updates
+• Use findOneAndReplace() for save-like behavior
+
+····························································
+
+Q7. What is upsert in MongoDB?
+
+Answer:
+Upsert is a combination of update and insert. If document exists, it updates; otherwise, it inserts.
+
+Example:
+db.users.updateOne(
+  { email: 'john@example.com' },
+  { $set: { name: 'John', age: 30 } },
+  { upsert: true }
+);
+
+Use cases:
+• Idempotent operations
+• Initialize or update
+• Avoid check-then-insert race conditions
+
+····························································
+
+Q8. What is $lookup in MongoDB?
+
+Answer:
+$lookup performs a left outer join between collections.
+
+Example:
+db.orders.aggregate([
+  {
+    $lookup: {
+      from: 'users',
+      localField: 'userId',
+      foreignField: '_id',
+      as: 'userDetails'
+    }
+  }
+]);
+
+Result:
+{
+  orderId: 1,
+  userId: 'user123',
+  userDetails: [
+    { _id: 'user123', name: 'John' }
+  ]
+}
+
+····························································
+
+Q9. What is $unwind in aggregation?
+
+Answer:
+$unwind deconstructs an array field and creates a separate document for each element.
+
+Example:
+Document:
+{ name: 'John', hobbies: ['reading', 'gaming'] }
+
+Query:
+db.users.aggregate([{ $unwind: '$hobbies' }]);
+
+Result:
+{ name: 'John', hobbies: 'reading' }
+{ name: 'John', hobbies: 'gaming' }
+
+Useful for:
+• Processing array elements individually
+• Grouping by array values
+
+····························································
+
+Q10. What is $project in aggregation?
+
+Answer:
+$project reshapes documents by including, excluding, or adding fields.
+
+Example:
+db.users.aggregate([
+  {
+    $project: {
+      name: 1,
+      email: 1,
+      _id: 0,
+      ageGroup: {
+        $cond: {
+          if: { $gte: ['$age', 18] },
+          then: 'Adult',
+          else: 'Minor'
+        }
+      }
+    }
+  }
+]);
+
+Operations:
+• 1: Include field
+• 0: Exclude field
+• Expression: Computed field
+
+····························································
+
+Q11. What is cursor in MongoDB?
+
+Answer:
+A cursor is a pointer to the result set of a query. It allows iteration through results.
+
+Methods:
+• hasNext(): Check if more documents
+• next(): Get next document
+• toArray(): Convert to array
+• forEach(): Iterate with function
+• limit(): Limit results
+• skip(): Skip documents
+• sort(): Sort results
+
+Example:
+const cursor = db.users.find({ age: { $gt: 25 } });
+while (cursor.hasNext()) {
+  printjson(cursor.next());
+}
+
+// Chaining
+db.users.find()
+  .sort({ age: -1 })
+  .skip(10)
+  .limit(5);
+
+····························································
+
+
+7. SCHEMA DESIGN
+------------------------------------------------------------
+
+Q1. What are best practices for MongoDB schema design?
+
+Answer:
+1. Design based on application access patterns
+2. Embed for one-to-one and one-to-few relationships
+3. Reference for one-to-many and many-to-many
+4. Denormalize data for read-heavy applications
+5. Use arrays for bounded lists
+6. Avoid deeply nested documents (>100 levels)
+7. Keep document size under 16MB
+8. Index frequently queried fields
+
+····························································
+
+Q2. When to embed vs reference in MongoDB?
+
+Answer:
+Embed when:
+• Data is accessed together
+• One-to-one relationship
+• One-to-few relationship
+• Data doesn't change often
+
+Reference when:
+• One-to-many relationship
+• Many-to-many relationship
+• Data is accessed independently
+• Data changes frequently
+• Need to avoid duplication
+
+····························································
+
+
+8. PERFORMANCE & OPTIMIZATION
+------------------------------------------------------------
+
+Q1. How do you optimize MongoDB queries?
+
+Answer:
+1. Create appropriate indexes
+2. Use projection to return only needed fields
+3. Use $limit to reduce documents processed
+4. Avoid $where operator (uses JavaScript)
+5. Use covered queries (query + projection uses index)
+6. Use explain() to analyze query performance
+7. Monitor slow queries
+8. Use appropriate shard keys
+
+Example:
+db.users.find(
+  { age: { $gt: 25 } },
+  { name: 1, email: 1 }
+).limit(10).explain('executionStats');
+
+····························································
+
+Q2. What is the explain() method?
+
+Answer:
+explain() provides information about query execution and performance.
+
+Modes:
+• 'queryPlanner': Shows query plan
+• 'executionStats': Shows execution statistics
+• 'allPlansExecution': Shows all plan candidates
+
+Example:
+db.users.find({ age: 25 }).explain('executionStats');
+
+Key metrics:
+• executionTimeMillis: Query execution time
+• totalDocsExamined: Documents scanned
+• totalKeysExamined: Index keys scanned
+• nReturned: Documents returned
+
+····························································
+

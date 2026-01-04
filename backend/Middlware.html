@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Express Middleware</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f8;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #1f2937;
+      text-align: center;
+    }
+
+    h2 {
+      color: #1e40af;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 5px;
+      margin-top: 30px;
+    }
+
+    p {
+      color: #374151;
+    }
+
+    ul {
+      margin-left: 20px;
+    }
+
+    pre {
+      background: #111827;
+      color: #e5e7eb;
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+
+    .note {
+      background: #e0f2fe;
+      padding: 10px;
+      border-left: 4px solid #0284c7;
+      margin-top: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    table, th, td {
+      border: 1px solid #d1d5db;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f1f5f9;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>🚀 Express.js Middleware</h1>
+
+<h2>What is Middleware?</h2>
+<p>
+Middleware is a function that runs <b>between request and response</b> in Express.js.
+</p>
+
+<pre><code>
+(req, res, next)
+</code></pre>
+
+<div class="note">
+👉 Middleware can access request, response, and decide whether to continue or stop.
+</div>
+
+<h2>Types of Middleware</h2>
+
+<h3>1️⃣ Application-level Middleware</h3>
+<p>
+Applies to the entire application using <code>app.use()</code>.
+</p>
+
+<pre><code>
+app.use((req, res, next) => {
+  console.log("Application Middleware");
+  next();
+});
+</code></pre>
+
+<h3>2️⃣ Router-level Middleware</h3>
+<p>
+Used for specific routes using <code>router.use()</code>.
+</p>
+
+<pre><code>
+const router = require("express").Router();
+
+router.use((req, res, next) => {
+  console.log("Router Middleware");
+  next();
+});
+</code></pre>
+
+<h3>3️⃣ Built-in Middleware</h3>
+<p>
+Provided by Express.js itself.
+</p>
+
+<pre><code>
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static("public"));
+</code></pre>
+
+<h3>4️⃣ Error-handling Middleware</h3>
+<p>
+Used to handle errors. It has <b>4 parameters</b>.
+</p>
+
+<pre><code>
+app.use((err, req, res, next) => {
+  res.status(500).send("Something went wrong");
+});
+</code></pre>
+
+<h3>5️⃣ Third-party Middleware</h3>
+<p>
+Installed using npm and used in applications.
+</p>
+
+<pre><code>
+const cors = require("cors");
+app.use(cors());
+</code></pre>
+
+<h2>Middleware Flow</h2>
+<p>
+Request → Middleware → Route → Response
+</p>
+
+<h2>Real-Life Example</h2>
+<ul>
+  <li>Authentication check</li>
+  <li>Logging requests</li>
+  <li>Input validation</li>
+</ul>
+
+<h2>⭐ Interview One-Line Answer</h2>
+<p>
+<b>Middleware</b> is a function that executes between the request and response cycle to control or modify the request.
+</p>
+
+<h2>🔥 Summary Table</h2>
+<table>
+  <tr>
+    <th>Type</th>
+    <th>Purpose</th>
+  </tr>
+  <tr>
+    <td>Application-level</td>
+    <td>Runs for all requests</td>
+  </tr>
+  <tr>
+    <td>Router-level</td>
+    <td>Runs for specific routes</td>
+  </tr>
+  <tr>
+    <td>Built-in</td>
+    <td>Provided by Express</td>
+  </tr>
+  <tr>
+    <td>Error-handling</td>
+    <td>Handles application errors</td>
+  </tr>
+  <tr>
+    <td>Third-party</td>
+    <td>External npm packages</td>
+  </tr>
+</table>
+
+</div>
+</body>
+</html>

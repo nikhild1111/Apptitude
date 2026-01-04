@@ -1,0 +1,499 @@
+MongoDB Interview Questions & Answers for Freshers
+
+Generated: 10/30/2025
+============================================================
+
+
+1. BASICS
+------------------------------------------------------------
+
+Q1. What is MongoDB?
+
+Answer:
+MongoDB is a NoSQL, document-oriented database that stores data in flexible, JSON-like documents called BSON (Binary JSON). It's designed for scalability, high performance, and flexibility. Unlike traditional relational databases, MongoDB doesn't require a predefined schema.
+
+····························································
+
+Q2. What are the main features of MongoDB?
+
+Answer:
+• Document-Oriented: Stores data in JSON-like documents
+• Schema-less: No fixed schema required
+• Scalability: Horizontal scaling through sharding
+• Indexing: Supports various index types
+• Replication: High availability through replica sets
+• Aggregation: Powerful aggregation framework
+• GridFS: For storing large files
+
+····························································
+
+Q3. What is a Document in MongoDB?
+
+Answer:
+A document is a record in MongoDB, similar to a row in relational databases. It's a set of key-value pairs stored in BSON format.
+
+Example:
+{
+  _id: ObjectId('507f1f77bcf86cd799439011'),
+  name: 'John Doe',
+  age: 25,
+  email: 'john@example.com'
+}
+
+····························································
+
+Q4. What is a Collection in MongoDB?
+
+Answer:
+A collection is a group of documents, similar to a table in relational databases. Collections don't enforce a schema, so documents within the same collection can have different fields.
+
+Example: A 'users' collection can contain multiple user documents.
+
+····························································
+
+Q5. What is the difference between SQL and MongoDB?
+
+Answer:
+SQL (Relational):
+• Fixed schema
+• Tables with rows and columns
+• Uses SQL queries
+• Vertical scaling
+• ACID transactions
+
+MongoDB (NoSQL):
+• Dynamic schema
+• Collections with documents
+• Uses JSON-like queries
+• Horizontal scaling
+• Eventual consistency (configurable)
+
+····························································
+
+
+2. CRUD OPERATIONS
+------------------------------------------------------------
+
+Q1. How do you insert a document in MongoDB?
+
+Answer:
+Using insertOne() or insertMany():
+
+// Insert single document
+db.users.insertOne({
+  name: 'Alice',
+  age: 28,
+  email: 'alice@example.com'
+});
+
+// Insert multiple documents
+db.users.insertMany([
+  { name: 'Bob', age: 30 },
+  { name: 'Charlie', age: 25 }
+]);
+
+····························································
+
+Q2. How do you find/query documents in MongoDB?
+
+Answer:
+Using find() and findOne():
+
+// Find all documents
+db.users.find();
+
+// Find with condition
+db.users.find({ age: { $gt: 25 } });
+
+// Find one document
+db.users.findOne({ name: 'Alice' });
+
+// Find with projection (specific fields)
+db.users.find({}, { name: 1, email: 1, _id: 0 });
+
+····························································
+
+Q3. How do you update documents in MongoDB?
+
+Answer:
+Using updateOne(), updateMany(), or replaceOne():
+
+// Update single document
+db.users.updateOne(
+  { name: 'Alice' },
+  { $set: { age: 29 } }
+);
+
+// Update multiple documents
+db.users.updateMany(
+  { age: { $lt: 25 } },
+  { $set: { status: 'young' } }
+);
+
+// Replace entire document
+db.users.replaceOne(
+  { name: 'Bob' },
+  { name: 'Bob', age: 31, city: 'NYC' }
+);
+
+····························································
+
+Q4. How do you delete documents in MongoDB?
+
+Answer:
+Using deleteOne() or deleteMany():
+
+// Delete single document
+db.users.deleteOne({ name: 'Alice' });
+
+// Delete multiple documents
+db.users.deleteMany({ age: { $lt: 20 } });
+
+// Delete all documents in collection
+db.users.deleteMany({});
+
+····························································
+
+
+3. QUERY OPERATORS
+------------------------------------------------------------
+
+Q1. What are comparison operators in MongoDB?
+
+Answer:
+Common comparison operators:
+
+• $eq: Equal to
+• $ne: Not equal to
+• $gt: Greater than
+• $gte: Greater than or equal
+• $lt: Less than
+• $lte: Less than or equal
+• $in: Matches any value in array
+• $nin: Matches none of the values
+
+Example:
+db.users.find({ age: { $gte: 18, $lte: 65 } });
+
+····························································
+
+Q2. What are logical operators in MongoDB?
+
+Answer:
+Logical operators:
+
+• $and: Matches all conditions
+• $or: Matches any condition
+• $not: Inverts the condition
+• $nor: Matches none of the conditions
+
+Example:
+db.users.find({
+  $or: [
+    { age: { $lt: 20 } },
+    { age: { $gt: 60 } }
+  ]
+});
+
+····························································
+
+Q3. What are update operators in MongoDB?
+
+Answer:
+Common update operators:
+
+• $set: Sets field value
+• $unset: Removes field
+• $inc: Increments field value
+• $push: Adds element to array
+• $pull: Removes element from array
+• $addToSet: Adds unique element to array
+
+Example:
+db.users.updateOne(
+  { name: 'Alice' },
+  { $inc: { age: 1 }, $push: { hobbies: 'reading' } }
+);
+
+····························································
+
+
+4. INDEXING
+------------------------------------------------------------
+
+Q1. What is indexing in MongoDB?
+
+Answer:
+Indexes are data structures that improve query performance by allowing MongoDB to quickly locate documents without scanning the entire collection. They work similar to book indexes.
+
+Without index: O(n) - scans all documents
+With index: O(log n) - much faster lookup
+
+····························································
+
+Q2. How do you create an index in MongoDB?
+
+Answer:
+Using createIndex():
+
+// Single field index
+db.users.createIndex({ email: 1 }); // 1 for ascending
+
+// Compound index
+db.users.createIndex({ name: 1, age: -1 }); // -1 for descending
+
+// Unique index
+db.users.createIndex({ email: 1 }, { unique: true });
+
+// View indexes
+db.users.getIndexes();
+
+····························································
+
+Q3. What types of indexes does MongoDB support?
+
+Answer:
+MongoDB supports several index types:
+
+• Single Field Index: On one field
+• Compound Index: On multiple fields
+• Multikey Index: On array fields
+• Text Index: For text search
+• Geospatial Index: For location data
+• Hashed Index: For hash-based sharding
+• Unique Index: Ensures uniqueness
+• TTL Index: Auto-deletes documents after time
+
+····························································
+
+
+5. AGGREGATION
+------------------------------------------------------------
+
+Q1. What is the Aggregation Framework in MongoDB?
+
+Answer:
+The Aggregation Framework is a pipeline-based system for processing and transforming documents. It's similar to SQL GROUP BY but more powerful.
+
+Data flows through stages, each stage transforms the documents.
+
+Common stages: $match, $group, $sort, $project, $limit, $skip
+
+····························································
+
+Q2. Write a basic aggregation query example
+
+Answer:
+Example: Get average age by city
+
+db.users.aggregate([
+  // Stage 1: Filter documents
+  { $match: { age: { $gte: 18 } } },
+  
+  // Stage 2: Group and calculate
+  { $group: {
+    _id: '$city',
+    avgAge: { $avg: '$age' },
+    count: { $sum: 1 }
+  }},
+  
+  // Stage 3: Sort results
+  { $sort: { avgAge: -1 } }
+]);
+
+····························································
+
+Q3. What are common aggregation operators?
+
+Answer:
+Accumulator operators:
+• $sum: Sum of values
+• $avg: Average of values
+• $min: Minimum value
+• $max: Maximum value
+• $first: First value
+• $last: Last value
+• $push: Create array of values
+
+Example:
+db.orders.aggregate([
+  { $group: {
+    _id: '$customerId',
+    totalSpent: { $sum: '$amount' },
+    orderCount: { $sum: 1 }
+  }}
+]);
+
+····························································
+
+
+6. ADVANCED CONCEPTS
+------------------------------------------------------------
+
+Q1. What is Sharding in MongoDB?
+
+Answer:
+Sharding is MongoDB's approach to horizontal scaling. It distributes data across multiple servers (shards) to handle large datasets and high throughput.
+
+Components:
+• Shard: Each shard holds a subset of data
+• Config Servers: Store metadata and configuration
+• Query Routers (mongos): Route queries to shards
+• Shard Key: Field used to distribute data
+
+····························································
+
+Q2. What is Replication in MongoDB?
+
+Answer:
+Replication provides redundancy and high availability. A replica set is a group of MongoDB servers that maintain the same data.
+
+Components:
+• Primary: Receives all write operations
+• Secondary: Replicates primary's data
+• Arbiter: Participates in elections (optional)
+
+If primary fails, a secondary is automatically elected as new primary.
+
+····························································
+
+Q3. What is the _id field in MongoDB?
+
+Answer:
+The _id field is a unique identifier for each document, similar to a primary key. MongoDB automatically creates it if not provided.
+
+Characteristics:
+• Always the first field
+• Immutable (cannot be changed)
+• Indexed by default
+• Default type: ObjectId (12-byte identifier)
+
+ObjectId structure:
+• 4 bytes: Timestamp
+• 5 bytes: Random value
+• 3 bytes: Incrementing counter
+
+····························································
+
+Q4. What is the difference between embedded and referenced documents?
+
+Answer:
+Embedded Documents (Denormalization):
+• Store related data in same document
+• Better read performance
+• Data duplication
+
+Example:
+{
+  name: 'John',
+  address: { city: 'NYC', zip: '10001' }
+}
+
+Referenced Documents (Normalization):
+• Store reference to another document
+• No duplication
+• Requires multiple queries or $lookup
+
+Example:
+{
+  name: 'John',
+  addressId: ObjectId('...')
+}
+
+····························································
+
+Q5. What is GridFS in MongoDB?
+
+Answer:
+GridFS is a specification for storing and retrieving large files (>16MB) that exceed BSON document size limit.
+
+How it works:
+• Splits files into chunks (255KB default)
+• Stores chunks in 'chunks' collection
+• Stores metadata in 'files' collection
+
+Use cases: Images, videos, audio files, large documents
+
+····························································
+
+
+7. SCHEMA DESIGN
+------------------------------------------------------------
+
+Q1. What are best practices for MongoDB schema design?
+
+Answer:
+1. Design based on application access patterns
+2. Embed for one-to-one and one-to-few relationships
+3. Reference for one-to-many and many-to-many
+4. Denormalize data for read-heavy applications
+5. Use arrays for bounded lists
+6. Avoid deeply nested documents (>100 levels)
+7. Keep document size under 16MB
+8. Index frequently queried fields
+
+····························································
+
+Q2. When to embed vs reference in MongoDB?
+
+Answer:
+Embed when:
+• Data is accessed together
+• One-to-one relationship
+• One-to-few relationship
+• Data doesn't change often
+
+Reference when:
+• One-to-many relationship
+• Many-to-many relationship
+• Data is accessed independently
+• Data changes frequently
+• Need to avoid duplication
+
+····························································
+
+
+8. PERFORMANCE & OPTIMIZATION
+------------------------------------------------------------
+
+Q1. How do you optimize MongoDB queries?
+
+Answer:
+1. Create appropriate indexes
+2. Use projection to return only needed fields
+3. Use $limit to reduce documents processed
+4. Avoid $where operator (uses JavaScript)
+5. Use covered queries (query + projection uses index)
+6. Use explain() to analyze query performance
+7. Monitor slow queries
+8. Use appropriate shard keys
+
+Example:
+db.users.find(
+  { age: { $gt: 25 } },
+  { name: 1, email: 1 }
+).limit(10).explain('executionStats');
+
+····························································
+
+Q2. What is the explain() method?
+
+Answer:
+explain() provides information about query execution and performance.
+
+Modes:
+• 'queryPlanner': Shows query plan
+• 'executionStats': Shows execution statistics
+• 'allPlansExecution': Shows all plan candidates
+
+Example:
+db.users.find({ age: 25 }).explain('executionStats');
+
+Key metrics:
+• executionTimeMillis: Query execution time
+• totalDocsExamined: Documents scanned
+• totalKeysExamined: Index keys scanned
+• nReturned: Documents returned
+
+····························································
+

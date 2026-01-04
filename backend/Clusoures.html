@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Closure for Security</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #1f2937;
+    }
+
+    h2 {
+      color: #1e40af;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 5px;
+      margin-top: 30px;
+    }
+
+    p, li {
+      color: #374151;
+    }
+
+    ul {
+      margin-left: 20px;
+    }
+
+    pre {
+      background: #111827;
+      color: #e5e7eb;
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+
+    code {
+      color: #93c5fd;
+    }
+
+    .note {
+      background: #e0f2fe;
+      padding: 10px;
+      border-left: 4px solid #0284c7;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>🔒 Closures for Security (JavaScript)</h1>
+
+<h2>Why Closures are used for Security?</h2>
+<p>
+<b>Closures are used for security because they help in data hiding (encapsulation).</b>
+</p>
+
+---
+
+<h2>What is a Closure? (1 Line)</h2>
+<p>
+A closure is a function that remembers variables from its outer scope,
+even after the outer function has finished executing.
+</p>
+
+---
+
+<h2>How Closure Provides Security 🔒</h2>
+<ul>
+  <li>Hide variables</li>
+  <li>Prevent direct access from outside</li>
+  <li>Allow access only through controlled functions</li>
+</ul>
+
+<div class="note">
+👉 This concept is called <b>data privacy / encapsulation</b>.
+</div>
+
+---
+
+<h2>✅ Code: Password Check using Closure</h2>
+
+<pre><code>
+function createPasswordChecker() {
+  const password = "admin123"; // private (hidden)
+
+  return function check(inputPassword) {
+    if (inputPassword === password) {
+      return "Access Granted";
+    } else {
+      return "Access Denied";
+    }
+  };
+}
+
+const checkPassword = createPasswordChecker();
+
+console.log(checkPassword("admin123")); // Access Granted
+console.log(checkPassword("test123"));  // Access Denied
+
+// console.log(password); ❌ Not accessible
+</code></pre>
+
+---
+
+<h2>📌 Explanation (Simple)</h2>
+<ul>
+  <li><b>password</b> is defined in the outer function</li>
+  <li><b>check()</b> is the inner function</li>
+  <li>Inner function remembers <b>password</b> (closure)</li>
+  <li>Password is hidden from outside access</li>
+  <li>Only allowed way is using <b>checkPassword()</b></li>
+</ul>
+
+---
+
+<h2>⭐ Interview One-Line Answer</h2>
+<p>
+Closures provide security by hiding sensitive data and allowing access only through controlled functions.
+</p>
+
+</div>
+</body>
+</html>

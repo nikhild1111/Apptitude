@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Node.js fs & path Module</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h1, h2 {
+      color: #1e3a8a;
+    }
+
+    h2 {
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 5px;
+    }
+
+    pre {
+      background: #111827;
+      color: #e5e7eb;
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+
+    code {
+      color: #93c5fd;
+    }
+
+    .note {
+      background: #e0f2fe;
+      padding: 10px;
+      border-left: 4px solid #0284c7;
+      margin: 10px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    table, th, td {
+      border: 1px solid #d1d5db;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background: #f1f5f9;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>📁 Node.js fs & path Module</h1>
+
+<!-- FS MODULE -->
+<h2>📁 fs Module (File System)</h2>
+
+<p><strong>What is fs module?</strong></p>
+<p>The <b>fs (File System)</b> module is used to work with files and folders in Node.js.</p>
+
+<ul>
+  <li>Create files</li>
+  <li>Read files</li>
+  <li>Write files</li>
+  <li>Update files</li>
+  <li>Delete files</li>
+  <li>Create / remove folders</li>
+</ul>
+
+<h3>1️⃣ Read a File</h3>
+<pre><code>
+const fs = require("fs");
+
+fs.readFile("data.txt", "utf8", (err, data) => {
+  if (err) console.log(err);
+  console.log(data);
+});
+</code></pre>
+
+<div class="note">👉 Reads file asynchronously (non-blocking)</div>
+
+<h3>2️⃣ Write to a File</h3>
+<pre><code>
+fs.writeFile("data.txt", "Hello Node.js", (err) => {
+  if (err) console.log(err);
+  else console.log("File written");
+});
+</code></pre>
+
+<h3>3️⃣ Append Data</h3>
+<pre><code>
+fs.appendFile("data.txt", "\nNew line", () => {
+  console.log("Data added");
+});
+</code></pre>
+
+<h3>4️⃣ Delete File</h3>
+<pre><code>
+fs.unlink("data.txt", () => {
+  console.log("File deleted");
+});
+</code></pre>
+
+<h3>Sync vs Async (Interview ⭐)</h3>
+<table>
+  <tr>
+    <th>Async</th>
+    <th>Sync</th>
+  </tr>
+  <tr>
+    <td>Non-blocking</td>
+    <td>Blocking</td>
+  </tr>
+  <tr>
+    <td>Recommended</td>
+    <td>Not recommended</td>
+  </tr>
+</table>
+
+<pre><code>
+fs.readFileSync("data.txt", "utf8");
+</code></pre>
+
+---
+
+<!-- FS REAL LIFE -->
+<h2>🧠 fs Module – Real Life Example</h2>
+
+<p><strong>Example:</strong> Saving exam answers / user data</p>
+
+<pre><code>
+const fs = require("fs");
+
+function saveAnswer(answer) {
+  fs.appendFile("answers.txt", answer + "\n", () => {
+    console.log("Answer saved");
+  });
+}
+
+saveAnswer("Question 1: Option B");
+</code></pre>
+
+<div class="note">
+👉 Used in online exams, logs, reports, user data storage
+</div>
+
+---
+
+<!-- PATH MODULE -->
+<h2>📂 path Module</h2>
+
+<p><strong>What is path module?</strong></p>
+<p>The <b>path</b> module is used to handle file and folder paths safely.</p>
+
+<ul>
+  <li>Windows uses <code>\</code></li>
+  <li>Linux/Mac uses <code>/</code></li>
+  <li><b>path</b> makes code OS-independent</li>
+</ul>
+
+<h3>1️⃣ Join Paths (MOST USED)</h3>
+<pre><code>
+const path = require("path");
+
+const filePath = path.join(__dirname, "files", "data.txt");
+console.log(filePath);
+</code></pre>
+
+<h3>2️⃣ Get File Name</h3>
+<pre><code>
+path.basename("/users/node/file.txt");
+// file.txt
+</code></pre>
+
+<h3>3️⃣ Get Directory Name</h3>
+<pre><code>
+path.dirname("/users/node/file.txt");
+// /users/node
+</code></pre>
+
+<h3>4️⃣ Get File Extension</h3>
+<pre><code>
+path.extname("file.txt");
+// .txt
+</code></pre>
+
+<h3>__dirname & __filename</h3>
+<pre><code>
+console.log(__dirname);   // folder path
+console.log(__filename);  // file path
+</code></pre>
+
+---
+
+<!-- STATIC FILE SERVER -->
+<h2>🌐 path Module – Static File Server Example</h2>
+
+<p><strong>Serving HTML file using path</strong></p>
+
+<pre><code>
+const http = require("http");
+const fs = require("fs");
+const path = require("path");
+
+const server = http.createServer((req, res) => {
+  const filePath = path.join(__dirname, "public", "index.html");
+
+  fs.readFile(filePath, (err, content) => {
+    if (err) {
+      res.writeHead(500);
+      res.end("Error");
+    } else {
+      res.writeHead(200, { "Content-Type": "text/html" });
+      res.end(content);
+    }
+  });
+});
+
+server.listen(3000);
+</code></pre>
+
+<div class="note">
+👉 Used in real projects to serve HTML, CSS, JS files
+</div>
+
+---
+
+<!-- COMPARISON -->
+<h2>🔥 fs vs path (Interview)</h2>
+
+<table>
+  <tr>
+    <th>fs</th>
+    <th>path</th>
+  </tr>
+  <tr>
+    <td>Works with files</td>
+    <td>Works with paths</td>
+  </tr>
+  <tr>
+    <td>Reads/Writes data</td>
+    <td>Builds paths safely</td>
+  </tr>
+  <tr>
+    <td>Changes file system</td>
+    <td>Does NOT touch files</td>
+  </tr>
+</table>
+
+---
+
+<h2>⭐ Interview One-Line Answers</h2>
+
+<p><b>fs module:</b> The fs module is used to perform file operations like read, write, update, and delete.</p>
+<p><b>path module:</b> The path module is used to handle and manipulate file paths in a platform-independent way.</p>
+
+</div>
+</body>
+</html>
