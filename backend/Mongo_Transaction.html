@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MongoDB vs MySQL Transactions – Interview Notes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0f172a;
+      color: #e5e7eb;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    h1, h2, h3 {
+      color: #38bdf8;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    section {
+      background-color: #020617;
+      padding: 20px;
+      margin-bottom: 25px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(56,189,248,0.2);
+    }
+
+    ul {
+      margin-left: 20px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    pre {
+      background-color: #020617;
+      color: #22c55e;
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+
+    .highlight {
+      color: #facc15;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      border: 1px solid #334155;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #1e293b;
+      color: #38bdf8;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>MongoDB & MySQL Transactions – Interview Ready Notes</h1>
+
+<section>
+  <h2>1️⃣ What is a Transaction in MongoDB?</h2>
+  <p>
+    A <span class="highlight">transaction</span> in MongoDB means multiple database operations
+    are treated as a <span class="highlight">single unit of work</span>.
+  </p>
+  <ul>
+    <li>✔ Either all operations succeed</li>
+    <li>❌ Or all operations fail and are rolled back</li>
+  </ul>
+  <p>This keeps data <strong>safe and consistent</strong>.</p>
+</section>
+
+<section>
+  <h2>2️⃣ Why Do We Use Transactions?</h2>
+  <ul>
+    <li>When multiple updates are related</li>
+    <li>When partial updates can cause wrong data</li>
+  </ul>
+
+  <h3>Example: Money Transfer</h3>
+  <ul>
+    <li>Debit money from sender</li>
+    <li>Credit money to receiver</li>
+  </ul>
+  <p>
+    If debit succeeds but credit fails → ❌ data mismatch  
+    <br>👉 Transaction avoids this problem.
+  </p>
+</section>
+
+<section>
+  <h2>3️⃣ When Do We Really Need Transactions in MongoDB?</h2>
+  <p><strong>Important interview point:</strong></p>
+  <ul>
+    <li>Single document update is already <strong>atomic</strong> in MongoDB</li>
+    <li>Transactions are needed for:</li>
+    <ul>
+      <li>Multiple documents</li>
+      <li>Multiple collections</li>
+    </ul>
+  </ul>
+</section>
+
+<section>
+  <h2>4️⃣ How Transactions Work (Simple Flow)</h2>
+  <ul>
+    <li>Start a session</li>
+    <li>Start transaction</li>
+    <li>Perform database operations</li>
+    <li>If success → commit</li>
+    <li>If error → abort (rollback)</li>
+  </ul>
+</section>
+
+<section>
+  <h2>5️⃣ Code Explanation (MongoDB Transaction)</h2>
+
+  <pre>
+const mongoose = require("mongoose");
+  </pre>
+  <p>✔ Import Mongoose</p>
+
+  <pre>
+const session = await mongoose.startSession();
+  </pre>
+  <p>✔ Session groups operations  
+     ✔ Transaction works inside a session</p>
+
+  <pre>
+session.startTransaction();
+  </pre>
+  <p>✔ All next operations belong to one transaction</p>
+
+  <h3>Debit Money</h3>
+  <pre>
+await Account.updateOne(
+  { _id: fromId },
+  { $inc: { balance: -amount } },
+  { session }
+);
+  </pre>
+
+  <h3>Credit Money</h3>
+  <pre>
+await Account.updateOne(
+  { _id: toId },
+  { $inc: { balance: amount } },
+  { session }
+);
+  </pre>
+
+  <h3>Commit Transaction</h3>
+  <pre>
+await session.commitTransaction();
+session.endSession();
+  </pre>
+
+  <h3>Abort Transaction (Error)</h3>
+  <pre>
+await session.abortTransaction();
+session.endSession();
+  </pre>
+</section>
+
+<section>
+  <h2>6️⃣ What If an Error Occurs?</h2>
+  <ul>
+    <li>Debit succeeds</li>
+    <li>Credit fails</li>
+  </ul>
+  <p>
+    👉 MongoDB rolls back debit  
+    <br>👉 Balance remains unchanged
+  </p>
+</section>
+
+<section>
+  <h2>7️⃣ ACID Properties (Must for Interview)</h2>
+  <ul>
+    <li><strong>Atomicity</strong> – All or nothing</li>
+    <li><strong>Consistency</strong> – Data remains valid</li>
+    <li><strong>Isolation</strong> – Transactions don’t interfere</li>
+    <li><strong>Durability</strong> – Data saved permanently</li>
+  </ul>
+</section>
+
+<section>
+  <h2>8️⃣ Important MongoDB Transaction Points</h2>
+  <ul>
+    <li>Requires <strong>Replica Set or Sharded Cluster</strong></li>
+    <li>Slower than normal operations</li>
+    <li>Avoid if not needed</li>
+    <li>Use only for critical logic</li>
+  </ul>
+</section>
+
+<section>
+  <h2>9️⃣ Difference Between MongoDB and MySQL Transactions</h2>
+
+  <table>
+    <tr>
+      <th>MongoDB</th>
+      <th>MySQL</th>
+    </tr>
+    <tr>
+      <td>NoSQL document database</td>
+      <td>Relational SQL database</td>
+    </tr>
+    <tr>
+      <td>Single document is atomic by default</td>
+      <td>Needs transaction for atomicity</td>
+    </tr>
+    <tr>
+      <td>Transactions added later (v4.0+)</td>
+      <td>Transactions are core feature</td>
+    </tr>
+    <tr>
+      <td>Requires replica set</td>
+      <td>Works on single DB instance</td>
+    </tr>
+    <tr>
+      <td>Slower transactions</td>
+      <td>Faster and optimized</td>
+    </tr>
+    <tr>
+      <td>Used only when needed</td>
+      <td>Used heavily in banking systems</td>
+    </tr>
+    <tr>
+      <td>Snapshot isolation</td>
+      <td>Row-level locking</td>
+    </tr>
+  </table>
+</section>
+
+<section>
+  <h2>🔑 Final Interview Answer</h2>
+  <p>
+    <strong>
+      MySQL transactions are more secure, faster, and have strong ACID properties,
+      so they are widely used in banking systems. MongoDB transactions are optional
+      and mainly used for multi-document operations because MongoDB already provides
+      atomicity at document level.
+    </strong>
+  </p>
+</section>
+<section>
+  <h2>🔹 Example: MongoDB Transaction Code (Money Transfer)</h2>
+
+  <p>
+    This example shows how a transaction is used in MongoDB to safely transfer money
+    from one account to another using <strong>Mongoose</strong>.
+  </p>
+
+  <pre>
+const mongoose = require("mongoose");
+
+async function transferMoney(fromId, toId, amount) {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    // Debit from sender
+    await Account.updateOne(
+      { _id: fromId },
+      { $inc: { balance: -amount } },
+      { session }
+    );
+
+    // Credit to receiver
+    await Account.updateOne(
+      { _id: toId },
+      { $inc: { balance: amount } },
+      { session }
+    );
+
+    // Commit transaction
+    await session.commitTransaction();
+    session.endSession();
+
+    console.log("Transaction successful");
+  } catch (error) {
+    // Rollback if error
+    await session.abortTransaction();
+    session.endSession();
+
+    console.log("Transaction failed, rolled back");
+  }
+}
+  </pre>
+
+  <div class="interview">
+    <strong>Explanation:</strong>
+    <ul>
+      <li>Transaction starts using a session</li>
+      <li>Debit and credit happen together</li>
+      <li>If any operation fails, all changes are rolled back</li>
+      <li>This ensures data consistency</li>
+    </ul>
+  </div>
+
+  <div class="interview">
+    <strong>Interview One-Liner:</strong><br>
+    “This transaction ensures that money is either fully transferred or not transferred at all.”
+  </div>
+</section>
+
+</body>
+</html>

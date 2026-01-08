@@ -139,7 +139,424 @@
 </head>
 <body>
     <div class="container">
-        <h1>🚀 MongoDB Aggregation Interview Guide</h1>
+      <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MongoDB Aggregation Interview Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .section {
+            margin-bottom: 35px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .emoji {
+            font-size: 1.2em;
+        }
+
+        .highlight {
+            background: #ffeaa7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .code-block {
+            background: #2d3436;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .example-box {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #4caf50;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #2196f3;
+        }
+
+        .interview-box {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #ff9800;
+        }
+
+        .power-answer {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.1em;
+            box-shadow: 0 5px 15px rgba(238,90,111,0.4);
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .arrow {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+<!-- ✅ ADDED CONTENT AT TOP (NEW) -->
+
+<h1>MongoDB Aggregation – Interview Ready Notes</h1>
+
+<div class="section">
+    <h2>What is Aggregation in MongoDB?</h2>
+    <p>
+        <span class="highlight">Aggregation</span> means processing multiple documents and returning a
+        <span class="highlight">calculated result</span>.
+    </p>
+    <p>👉 Similar to <strong>GROUP BY</strong> in SQL.</p>
+
+    <h3>Used for:</h3>
+    <ul>
+        <li><strong>Sum</strong> – total value</li>
+        <li><strong>Count</strong> – number of documents</li>
+        <li><strong>Average</strong> – mean value</li>
+        <li><strong>Grouping data</strong></li>
+    </ul>
+</div>
+
+<div class="section">
+    <h2>Aggregation Operations – With Examples</h2>
+
+    <div class="example-box">
+        <span class="badge">COUNT</span>
+        <p><strong>Count total documents</strong></p>
+        <div class="code-block">db.orders.aggregate([
+  {
+    $group: {
+      _id: null,
+      totalOrders: { $sum: 1 }
+    }
+  }
+])</div>
+        <p class="arrow">👉 Counts total orders</p>
+    </div>
+
+    <div class="example-box">
+        <span class="badge">SUM</span>
+        <p><strong>Sum total amount</strong></p>
+        <div class="code-block">db.orders.aggregate([
+  {
+    $group: {
+      _id: null,
+      totalRevenue: { $sum: "$amount" }
+    }
+  }
+])</div>
+        <p class="arrow">👉 Calculates total revenue</p>
+    </div>
+
+    <div class="example-box">
+        <span class="badge">AVERAGE</span>
+        <p><strong>Average order value</strong></p>
+        <div class="code-block">db.orders.aggregate([
+  {
+    $group: {
+      _id: null,
+      avgOrderValue: { $avg: "$amount" }
+    }
+  }
+])</div>
+        <p class="arrow">👉 Calculates average order amount</p>
+    </div>
+
+    <div class="example-box">
+        <span class="badge">GROUPING</span>
+        <p><strong>Group orders by status</strong></p>
+        <div class="code-block">db.orders.aggregate([
+  {
+    $group: {
+      _id: "$status",
+      totalOrders: { $sum: 1 }
+    }
+  }
+])</div>
+        <p class="arrow">👉 Groups data by status</p>
+    </div>
+</div>
+
+
+
+<!-- ✅ YOUR ORIGINAL CONTENT CONTINUES BELOW (UNCHANGED) -->
+<!-- ===================== BASIC AGGREGATION CONCEPTS (TOP SECTION) ===================== -->
+
+<section>
+  <h2>What is Aggregation in MongoDB?</h2>
+
+  <p>
+    <span class="highlight">Aggregation</span> means processing multiple documents and returning a
+    <span class="highlight">calculated result</span>.
+  </p>
+
+  <p>👉 Similar to <strong>GROUP BY</strong> in SQL.</p>
+
+  <h3>Used for:</h3>
+  <ul>
+    <li><strong>Sum</strong> – total value</li>
+    <li><strong>Count</strong> – number of documents</li>
+    <li><strong>Average</strong> – mean value</li>
+    <li><strong>Grouping data</strong> – categorizing documents</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Aggregation Pipeline</h2>
+  <p>Data passes step by step through different stages.</p>
+
+  <pre>
+db.orders.aggregate([
+  { stage1 },
+  { stage2 },
+  { stage3 }
+])
+  </pre>
+
+  <div class="interview">
+    Interview line: <br>
+    <strong>Aggregation works as a pipeline where each stage processes the data.</strong>
+  </div>
+</section>
+
+<section>
+  <h2>$match (Filter Stage)</h2>
+
+  <p><strong>Purpose:</strong> Used to filter documents.</p>
+
+  <ul>
+    <li>Filters documents</li>
+    <li>Same as <strong>WHERE</strong> in SQL</li>
+    <li>Improves performance by reducing data early</li>
+  </ul>
+
+  <pre>
+{ $match: { status: "paid" } }
+  </pre>
+
+  <p>👉 Only documents with <strong>status = paid</strong> move forward.</p>
+
+  <div class="interview">
+    <strong>Simple meaning:</strong> First filter the data, then process it.
+  </div>
+</section>
+
+<section>
+  <h2>$group (Group & Calculate)</h2>
+
+  <p><strong>Purpose:</strong> Used to group documents and calculate values.</p>
+
+  <ul>
+    <li>Groups documents</li>
+    <li>Performs calculations (sum, count, avg)</li>
+    <li><strong>Collapses</strong> multiple documents into one</li>
+  </ul>
+
+  <pre>
+{
+  $group: {
+    _id: "$category",
+    totalSales: { $sum: "$amount" }
+  }
+}
+  </pre>
+
+  <p>👉 All documents with the same category become one result.</p>
+
+  <div class="interview">
+    Interview word: <br>
+    <strong>$group collapses documents based on _id.</strong>
+  </div>
+</section>
+
+<section>
+  <h2>Common Calculations in $group (With Simple Examples)</h2>
+
+  <h3>COUNT</h3>
+  <pre>
+{
+  $group: {
+    _id: null,
+    totalOrders: { $sum: 1 }
+  }
+}
+  </pre>
+  <p>👉 Counts total number of documents.</p>
+
+  <h3>SUM</h3>
+  <pre>
+{
+  $group: {
+    _id: null,
+    totalRevenue: { $sum: "$amount" }
+  }
+}
+  </pre>
+  <p>👉 Adds all values of <strong>amount</strong>.</p>
+
+  <h3>AVERAGE</h3>
+  <pre>
+{
+  $group: {
+    _id: null,
+    avgOrderValue: { $avg: "$amount" }
+  }
+}
+  </pre>
+  <p>👉 Calculates average value.</p>
+
+  <h3>GROUPING</h3>
+  <pre>
+{
+  $group: {
+    _id: "$status",
+    totalOrders: { $sum: 1 }
+  }
+}
+  </pre>
+  <p>👉 Groups documents by status (paid, pending, cancelled).</p>
+</section>
+
+<section>
+  <h2>$lookup (Join Stage)</h2>
+
+  <p><strong>Purpose:</strong> Used to join two collections.</p>
+
+  <ul>
+    <li>Joins two collections</li>
+    <li>Same as <strong>JOIN</strong> in SQL</li>
+  </ul>
+
+  <pre>
+{
+  $lookup: {
+    from: "users",
+    localField: "userId",
+    foreignField: "_id",
+    as: "userDetails"
+  }
+}
+  </pre>
+
+  <p>👉 Adds user data inside each order document.</p>
+
+  <div class="interview">
+    <strong>$lookup is used to join data from another collection.</strong>
+  </div>
+</section>
+
+<section>
+  <h2>Final Interview One-Line Answers</h2>
+
+  <div class="interview">
+    <strong>Aggregation:</strong> Aggregation processes data through multiple stages to produce calculated results.
+  </div>
+
+  <div class="interview">
+    <strong>$match:</strong> $match filters documents like WHERE clause.
+  </div>
+
+  <div class="interview">
+    <strong>$group:</strong> $group groups and collapses documents and performs calculations.
+  </div>
+
+  <div class="interview">
+    <strong>$lookup:</strong> $lookup joins data from another collection like SQL JOIN.
+  </div>
+</section>
+
+<!-- ===================== END BASIC AGGREGATION CONCEPTS ===================== -->
+
+
+<!-- (REST OF YOUR FILE CONTINUES EXACTLY AS YOU PROVIDED — UNCHANGED) -->
+
+  <h1>🚀 MongoDB Aggregation Interview Guide</h1>
 
         <div class="section">
             <div class="section-title">
@@ -321,6 +738,7 @@
             <div style="font-size: 1.3em; margin-bottom: 10px;">🔑 One-Line Power Answer</div>
             "I used aggregation for dashboards and analytics, and for better performance I stored totalOrders and totalSpend in the user schema to avoid recalculating every time."
         </div>
+
 
     </div>
 </body>
