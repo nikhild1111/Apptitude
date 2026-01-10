@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>React Custom Hooks – Complete Guide</title>
+
+  <style>
+    :root {
+      --primary: #6366f1;
+      --secondary: #8b5cf6;
+      --bg: #f4f6ff;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --code-bg: #0f172a;
+      --code-text: #e5e7eb;
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(120deg, var(--primary), var(--secondary));
+      padding: 30px;
+    }
+
+    .container {
+      max-width: 1150px;
+      margin: auto;
+      background: var(--bg);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 30px 70px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.8rem;
+      color: var(--primary);
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 40px;
+    }
+
+    section {
+      background: var(--card);
+      padding: 30px;
+      border-radius: var(--radius);
+      margin-bottom: 30px;
+      box-shadow: 0 12px 25px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      color: var(--secondary);
+      margin-bottom: 10px;
+    }
+
+    h3 {
+      margin-top: 20px;
+      color: var(--primary);
+    }
+
+    p {
+      line-height: 1.7;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+
+    ul {
+      padding-left: 20px;
+      margin-bottom: 10px;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    .badge {
+      background: #eef2ff;
+      color: var(--primary);
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 20px;
+      border-radius: 12px;
+      overflow-x: auto;
+      font-size: 0.95rem;
+      margin-top: 10px;
+    }
+
+    code {
+      color: #38bdf8;
+    }
+
+    .interview {
+      background: #ecfeff;
+      border-left: 5px solid #06b6d4;
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin-top: 15px;
+      font-style: italic;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <h1>🔹 React Custom Hooks – Complete Guide</h1>
+  <p class="subtitle">With Usage • Explanation • Interview Ready</p>
+
+  <!-- INTRO -->
+  <section>
+    <span class="badge">📚 Basics</span>
+    <h2>What is a Custom Hook?</h2>
+    <p>
+      A <strong>custom hook</strong> is a JavaScript function that starts with
+      <code>use</code> and reuses React hook logic across components.
+    </p>
+    <p>👉 It helps reuse <strong>logic</strong>, not UI.</p>
+  </section>
+
+  <!-- WHERE USED -->
+  <section>
+    <span class="badge">📍 Usage</span>
+    <h2>Where do we use Custom Hooks?</h2>
+    <ul>
+      <li>API calls (fetching data)</li>
+      <li>Authentication & authorization</li>
+      <li>Search inputs (debounce/throttle)</li>
+      <li>Local storage / session storage</li>
+      <li>Form handling</li>
+      <li>Reusable logic across pages</li>
+    </ul>
+  </section>
+
+  <!-- useFetch -->
+  <section>
+    <span class="badge">🔥 MOST IMPORTANT</span>
+    <h2>1️⃣ useFetch</h2>
+
+    <p><strong>What it does:</strong></p>
+    <ul>
+      <li>Fetches API data</li>
+      <li>Handles loading state</li>
+      <li>Handles error state</li>
+    </ul>
+
+    <h3>📌 useFetch.js</h3>
+    <pre><code>
+import { useState, useEffect } from "react";
+
+function useFetch(url) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    setLoading(true);
+
+    fetch(url)
+      .then(res => {
+        if (!res.ok) throw new Error("Error fetching data");
+        return res.json();
+      })
+      .then(data => {
+        setData(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, [url]);
+
+  return { data, loading, error };
+}
+
+export default useFetch;
+    </code></pre>
+
+    <h3>📌 Usage in Component</h3>
+    <pre><code>
+function Products() {
+  const { data, loading, error } =
+    useFetch("https://fakestoreapi.com/products");
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
+
+  return data.map(p => <div key={p.id}>{p.title}</div>);
+}
+    </code></pre>
+
+    <p><strong>Explanation:</strong></p>
+    <p>
+      The component stays clean. All API logic is handled inside <code>useFetch</code>.
+    </p>
+
+    <div class="interview">
+      💬 "I use useFetch to manage API calls with loading and error handling."
+    </div>
+  </section>
+
+  <!-- useAuth -->
+  <section>
+    <span class="badge">🔐 Authentication</span>
+    <h2>2️⃣ useAuth</h2>
+
+    <p><strong>What it does:</strong></p>
+    <ul>
+      <li>Stores login token</li>
+      <li>Checks authentication</li>
+      <li>Adds Bearer token to API calls</li>
+    </ul>
+
+    <h3>📌 useAuth.js</h3>
+    <pre><code>
+import { useState } from "react";
+
+function useAuth() {
+  const [token, setToken] = useState(
+    localStorage.getItem("token")
+  );
+
+  const login = (newToken) => {
+    localStorage.setItem("token", newToken);
+    setToken(newToken);
+  };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    setToken(null);
+  };
+
+  const isAuthenticated = !!token;
+
+  const getAuthHeader = () => {
+    return token
+      ? { Authorization: `Bearer ${token}` }
+      : {};
+  };
+
+  return { login, logout, isAuthenticated, getAuthHeader };
+}
+
+export default useAuth;
+    </code></pre>
+
+    <h3>📌 Usage Example</h3>
+    <pre><code>
+const { login, logout, isAuthenticated, getAuthHeader } = useAuth();
+
+// Login
+login("abc123token");
+
+// Protected API call
+fetch("/api/user", {
+  headers: {
+    "Content-Type": "application/json",
+    ...getAuthHeader()
+  }
+});
+    </code></pre>
+
+    <p><strong>Explanation:</strong></p>
+    <p>
+      Instead of repeating token logic in every file, <code>useAuth</code>
+      centralizes authentication.
+    </p>
+
+    <div class="interview">
+      💬 "I created useAuth to manage authentication state and authorization headers."
+    </div>
+  </section>
+
+  <!-- useDebounce -->
+  <section>
+    <span class="badge">⚡ Performance</span>
+    <h2>3️⃣ useDebounce</h2>
+
+    <p><strong>What it does:</strong> Delays value update to improve performance.</p>
+
+    <h3>📌 useDebounce.js</h3>
+    <pre><code>
+import { useState, useEffect } from "react";
+
+function useDebounce(value, delay = 500) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
+export default useDebounce;
+    </code></pre>
+
+    <h3>📌 Usage (Search Input)</h3>
+    <pre><code>
+const [search, setSearch] = useState("");
+const debouncedSearch = useDebounce(search, 500);
+
+useEffect(() => {
+  fetch(`/api/search?q=${debouncedSearch}`);
+}, [debouncedSearch]);
+    </code></pre>
+
+    <p><strong>Explanation:</strong></p>
+    <p>
+      API call happens only after user stops typing for 500ms.
+    </p>
+
+    <div class="interview">
+      💬 "I use useDebounce to reduce unnecessary API calls during typing."
+    </div>
+  </section>
+
+  <!-- useLocalStorage -->
+  <section>
+    <span class="badge">💾 Storage</span>
+    <h2>4️⃣ useLocalStorage</h2>
+
+    <p><strong>What it does:</strong> Syncs state with localStorage.</p>
+
+    <h3>📌 useLocalStorage.js</h3>
+    <pre><code>
+import { useState } from "react";
+
+function useLocalStorage(key, initialValue) {
+  const [value, setValue] = useState(() => {
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : initialValue;
+  });
+
+  const setStoredValue = (newValue) => {
+    localStorage.setItem(key, JSON.stringify(newValue));
+    setValue(newValue);
+  };
+
+  return [value, setStoredValue];
+}
+
+export default useLocalStorage;
+    </code></pre>
+
+    <h3>📌 Usage Example</h3>
+    <pre><code>
+const [user, setUser] =
+  useLocalStorage("user", null);
+
+// Save user
+setUser({ name: "Nikhil" });
+    </code></pre>
+
+    <p><strong>Explanation:</strong></p>
+    <p>
+      Data stays even after page refresh. Useful for user info, theme, settings.
+    </p>
+
+    <div class="interview">
+      💬 "useLocalStorage helps persist data across page refresh."
+    </div>
+  </section>
+
+  <footer>
+    🚀 React Custom Hooks – Usage + Explanation + Interview Ready
+  </footer>
+<!-- ================= FOLDER STRUCTURE ================= -->
+<section>
+  <span class="badge">📁 Architecture</span>
+  <h2>✅ BEST PRACTICE REACT FOLDER STRUCTURE</h2>
+
+  <p><strong>Why this structure?</strong></p>
+  <ul>
+    <li>Scalable for large applications</li>
+    <li>Easy to maintain</li>
+    <li>Clean separation of concerns</li>
+    <li>Industry-standard (used in real companies)</li>
+  </ul>
+
+  <h3>📌 Frontend (React)</h3>
+  <pre><code>
+src/
+ ├── assets/
+ │    ├── images/
+ │    ├── icons/
+ │    └── styles/
+ │
+ ├── components/
+ │    ├── common/
+ │    │     ├── Button.jsx
+ │    │     ├── Loader.jsx
+ │    │     └── Modal.jsx
+ │    │
+ │    └── layout/
+ │          ├── Navbar.jsx
+ │          └── Footer.jsx
+ │
+ ├── pages/
+ │    ├── Home.jsx
+ │    ├── Login.jsx
+ │    ├── Register.jsx
+ │    └── Dashboard.jsx
+ │
+ ├── hooks/
+ │    ├── useFetch.js
+ │    ├── useAuth.js
+ │    ├── useDebounce.js
+ │    └── useLocalStorage.js
+ │
+ ├── context/
+ │    └── AuthContext.jsx
+ │
+ ├── services/
+ │    ├── api.js
+ │    └── authService.js
+ │
+ ├── utils/
+ │    ├── constants.js
+ │    └── helpers.js
+ │
+ ├── routes/
+ │    └── AppRoutes.jsx
+ │
+ ├── App.jsx
+ ├── main.jsx
+ └── index.css
+  </code></pre>
+
+  <p><strong>Explanation:</strong></p>
+  <ul>
+    <li><code>components</code> → Reusable UI blocks</li>
+    <li><code>pages</code> → Route-level components</li>
+    <li><code>hooks</code> → Custom reusable logic</li>
+    <li><code>context</code> → Global state</li>
+    <li><code>services</code> → API calls</li>
+    <li><code>utils</code> → Helper functions</li>
+  </ul>
+
+  <h3>📌 Backend (Node + Express)</h3>
+  <pre><code>
+backend/
+ ├── controllers/
+ ├── routes/
+ ├── models/
+ ├── middleware/
+ └── server.js
+  </code></pre>
+
+  <p><strong>Explanation:</strong></p>
+  <ul>
+    <li><code>controllers</code> → Business logic</li>
+    <li><code>routes</code> → API endpoints</li>
+    <li><code>models</code> → Database schemas</li>
+    <li><code>middleware</code> → Auth, validation, errors</li>
+  </ul>
+</section>
+
+<!-- ================= CONTEXT QUESTION ================= -->
+<section>
+  <span class="badge">❓ Interview Question</span>
+  <h2>❓ Is Context API a Custom Hook?</h2>
+
+  <div class="interview">
+    <p><b>No ❌</b></p>
+    <ul>
+      <li>Context API is a <strong>state management tool</strong></li>
+      <li>Custom Hook is <strong>reusable logic</strong></li>
+      <li><b>But:</b> We often create a custom hook on top of Context</li>
+    </ul>
+
+    <p><b>Example:</b> <code>useAuth()</code> consuming <code>AuthContext</code></p>
+
+    <p><b>Interview line:</b><br />
+      “Context API is not a custom hook, but we often wrap it inside a custom hook for cleaner usage.”
+    </p>
+  </div>
+</section>
+
+<hr />
+
+</div>
+
+</body>
+</html>
